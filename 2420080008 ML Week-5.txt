@@ -1,0 +1,39 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.metrics import accuracy_score
+data = load_iris()
+X = data.data
+y = data.targetX_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42
+)
+dt_gini = DecisionTreeClassifier(criterion="gini")
+dt_gini.fit(X_train, y_train)
+dt_entropy = DecisionTreeClassifier(criterion="entropy")
+dt_entropy.fit(X_train, y_train)
+y_pred_gini = dt_gini.predict(X_test)
+y_pred_entropy = dt_entropy.predict(X_test)
+
+print("Gini Accuracy:", accuracy_score(y_test, y_pred_gini))
+print("Entropy Accuracy:", accuracy_score(y_test, y_pred_entropy))
+plt.figure(figsize=(15,8))
+plot_tree(dt_gini, filled=True, feature_names=data.feature_names)
+plt.title("Decision Tree using Gini")
+plt.show()
+plt.figure(figsize=(15,8))
+plot_tree(dt_entropy, filled=True, feature_names=data.feature_names)
+plt.title("Decision Tree using Entropy")
+plt.show()
+dt_pruned = DecisionTreeClassifier(
+    criterion="gini",
+    max_depth=3,
+    min_samples_split=10
+)
+dt_pruned.fit(X_train, y_train)
+train_acc = dt_pruned.score(X_train, y_train)
+test_acc = dt_pruned.score(X_test, y_test)
+
+print("Train Accuracy:", train_acc)
+print("Test Accuracy:", test_acc)
